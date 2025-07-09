@@ -1,103 +1,118 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState, useEffect, useRef } from "react"
+import gsap from "gsap"
+import { DashboardHeader } from "@/components/dashboard-header"
+import { StatsCards } from "@/components/stats-cards"
+import { ChartsSection } from "@/components/charts-section"
+import { StudentDetailsTable } from "@/components/student-details-table"
+import { RightSidebar } from "@/components/right-sidebar"
+import type { Student } from "@/types/student"
+import { AppSidebar } from "@/components/app-sidebar"
+
+export default function Dashboard() {
+  const [students, setStudents] = useState<Student[]>([])
+
+  // Refs for animation
+  const headerRef = useRef(null)
+  const sidebarRef = useRef(null)
+  const tableRef = useRef(null)
+  const cardsRef = useRef(null)
+  const chartsRef = useRef(null)
+  const sideRef = useRef(null)
+
+ 
+  useEffect(() => {
+    const tl = gsap.timeline()
+
+    tl.from(headerRef.current, {
+      y: -50,
+      opacity: 0,
+      duration: 1,
+      ease: "power2.out",
+    })
+    tl.from(sideRef.current, {
+      x: -100,
+      opacity: 0,
+      duration: 0.6,
+      ease: "power2.out",
+    })
+
+
+      .from(sidebarRef.current, {
+        x: 100,
+        opacity: 0,
+        duration: 1,
+        ease: "power2.out",
+      }, "-=0.4")
+      .from(tableRef.current, {
+        y: 50,
+        opacity: 0,
+        duration: 1,
+        ease: "power2.out",
+      }, "-=0.3")
+      .from([cardsRef.current, chartsRef.current], {
+        opacity: 0,
+        y: 30,
+        stagger: 0.5,
+        duration: 1,
+        ease: "power2.out",
+      }, "-=0.4")
+  }, [])
+
+  useEffect(() => {
+    const savedStudents = localStorage.getItem("students")
+    if (savedStudents) {
+      setStudents(JSON.parse(savedStudents))
+    } else {
+      const initialStudents: Student[] = [
+        { id: "1", name: "Vijayabala", status: "Enrolled", course: "UI/UX Design", enrolled: "19/04/2023", progress: 75 },
+        { id: "2", name: "Pranav", status: "Enrolled", course: "Full Stack Development", enrolled: "18/04/2023", progress: 60 },
+        { id: "3", name: "Anil", status: "Enrolled", course: "Front-End Development", enrolled: "20/04/2023", progress: 85 },
+        { id: "4", name: "Ajith", status: "Enrolled", course: "Back-End Development", enrolled: "15/03/2023", progress: 90 },
+        { id: "5", name: "Manohar", status: "Enrolled", course: "UI/UX Design", enrolled: "20/03/2023", progress: 45 },
+        { id: "6", name: "Arun", status: "Enrolled", course: "Front-End Development", enrolled: "03/04/2023", progress: 70 },
+      ]
+      setStudents(initialStudents)
+      localStorage.setItem("students", JSON.stringify(initialStudents))
+    }
+  }, [])
+
+  const updateStudents = (newStudents: Student[]) => {
+    setStudents(newStudents)
+    localStorage.setItem("students", JSON.stringify(newStudents))
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <><div className="flex min-h-screen w-full">
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <AppSidebar />
+
+      <main className="flex-1 bg-gray-50">
+
+        <div className="flex min-h-screen overflow-hidden
+    ">
+          <div className="flex-1 p-6">
+            <div ref={headerRef}>
+              <DashboardHeader />
+            </div>
+            <div className="mt-6" ref={cardsRef}>
+              <StatsCards students={students} />
+            </div>
+            <div className="mt-6" ref={chartsRef}>
+              <ChartsSection students={students} />
+            </div>
+            <div className="mt-6" ref={tableRef}>
+              <StudentDetailsTable students={students} onUpdateStudents={updateStudents} />
+            </div>
+          </div>
+          <div ref={sidebarRef}>
+            <RightSidebar />
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
-  );
+    </>
+
+  )
 }
