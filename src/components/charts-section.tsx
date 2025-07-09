@@ -2,13 +2,13 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import type { Student } from "@/types/student"
+// import type { Student } from "@/types/student"
 
-interface ChartsSectionProps {
-  students: Student[]
-}
+// interface ChartsSectionProps {
+//   students: Student[]
+// }
 
-export function ChartsSection({ students }: ChartsSectionProps) {
+export function ChartsSection() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Revenue Chart */}
